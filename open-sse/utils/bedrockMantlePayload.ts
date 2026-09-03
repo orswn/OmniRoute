@@ -194,6 +194,7 @@ export function normalizeMantlePayload(payload: unknown): unknown {
   const next: JsonRecord = { ...rec, input: cloneResponsesInput(rec.input) };
   normalizePromptCachePolicy(next);
   delete next.max_output_tokens;
+  delete next.max_tokens;
   stripReasoningSummary(next);
   moveDeveloperInstruction(next);
   defaultLowVerbosity(next);

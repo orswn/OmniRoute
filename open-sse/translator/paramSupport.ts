@@ -30,6 +30,12 @@ type StripRule = {
 const MAX_OUTPUT_TOKEN_KEYS = ["max_tokens", "max_completion_tokens", "max_output_tokens"] as const;
 
 const STRIP_RULES: StripRule[] = [
+  // Bedrock Mantle: GPT-5 models reject `max_tokens` (use `max_completion_tokens`).
+  {
+    provider: "bedrock-mantle",
+    match: /.*/,
+    drop: ["max_tokens"],
+  },
   // claude-opus-4 series: temperature is deprecated (Anthropic returns 400). #1748
   { match: /claude-opus-4/i, drop: ["temperature"] },
   // GitHub Copilot gpt-5.4: temperature unsupported.
