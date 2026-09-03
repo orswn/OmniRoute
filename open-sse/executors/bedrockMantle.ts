@@ -1,5 +1,6 @@
 import { DefaultExecutor } from "./default.ts";
 import type { ProviderCredentials, ExecutorExecuteResult } from "./base.ts";
+import { getModelTargetFormat } from "../config/providerModels.ts";
 import {
   signBedrockMantleRequest,
   resolveBedrockMantleRegion,
@@ -13,19 +14,23 @@ export class BedrockMantleExecutor extends DefaultExecutor {
   }
 
   override buildUrl(
-    _model: string,
+    model: string,
     _stream: boolean,
     _urlIndex = 0,
     credentials: ProviderCredentials | null = null
   ): string {
+    const path =
+      getModelTargetFormat("bedrock-mantle", model) === "openai-responses"
+        ? "/responses"
+        : "/chat/completions";
     const configuredBase = credentials?.providerSpecificData?.baseUrl;
     if (typeof configuredBase === "string" && configuredBase.trim().length > 0) {
       const clean = configuredBase.trim().replace(/\/+$/, "");
-      return `${clean}/chat/completions`;
+      return `${clean}${path}`;
     }
     const region = resolveBedrockMantleRegion(credentials?.providerSpecificData);
     const base = buildBedrockMantleBaseUrl(region);
-    return `${base}/chat/completions`;
+    return `${base}${path}`;
   }
 
   override transformRequest(

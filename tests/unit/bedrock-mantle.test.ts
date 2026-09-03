@@ -12,6 +12,7 @@ import {
   validateMantleThinkingSignatures,
   MantlePayloadError,
 } from "../../open-sse/utils/bedrockMantlePayload.ts";
+import { getModelTargetFormat } from "../../open-sse/config/providerModels.ts";
 import { BedrockMantleExecutor } from "../../open-sse/executors/bedrockMantle.ts";
 import type { ProviderCredentials } from "../../open-sse/executors/base.ts";
 
@@ -119,18 +120,19 @@ test("Bedrock Mantle reasoning signature validation", () => {
   );
 });
 
-test("BedrockMantleExecutor constructs and builds URLs", () => {
+test("BedrockMantleExecutor routes GPT-5.6 through Responses", () => {
   const executor = new BedrockMantleExecutor();
   assert.equal(executor.getProvider(), "bedrock-mantle");
+  assert.equal(getModelTargetFormat("bedrock-mantle", "openai.gpt-5.6-sol"), "openai-responses");
 
   const defaultUrl = executor.buildUrl("openai.gpt-5.6-sol", false, 0, null);
-  assert.equal(defaultUrl, "https://bedrock-mantle.us-east-1.api.aws/openai/v1/chat/completions");
+  assert.equal(defaultUrl, "https://bedrock-mantle.us-east-1.api.aws/openai/v1/responses");
 
   const customRegionUrl = executor.buildUrl("openai.gpt-5.6-sol", false, 0, {
     providerSpecificData: { region: "eu-west-1" },
   } as unknown as ProviderCredentials);
-  assert.equal(
-    customRegionUrl,
-    "https://bedrock-mantle.eu-west-1.api.aws/openai/v1/chat/completions"
-  );
+  assert.equal(customRegionUrl, "https://bedrock-mantle.eu-west-1.api.aws/openai/v1/responses");
+
+  const legacyUrl = executor.buildUrl("openai.gpt-5.5", false, 0, null);
+  assert.equal(legacyUrl, "https://bedrock-mantle.us-east-1.api.aws/openai/v1/chat/completions");
 });

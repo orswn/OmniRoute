@@ -1,4 +1,4 @@
-import type { RegistryEntry } from "../../shared.ts";
+import { GPT_5_6_API_CAPABILITIES, type RegistryEntry } from "../../shared.ts";
 
 export const bedrockMantleProvider: RegistryEntry = {
   id: "bedrock-mantle",
@@ -12,26 +12,17 @@ export const bedrockMantleProvider: RegistryEntry = {
     {
       id: "openai.gpt-5.6-sol",
       name: "GPT-5.6 Sol (Bedrock Mantle)",
-      toolCalling: true,
-      supportsVision: true,
-      contextLength: 1050000,
-      maxOutputTokens: 128000,
+      ...GPT_5_6_API_CAPABILITIES,
     },
     {
       id: "openai.gpt-5.6-terra",
       name: "GPT-5.6 Terra (Bedrock Mantle)",
-      toolCalling: true,
-      supportsVision: true,
-      contextLength: 1050000,
-      maxOutputTokens: 128000,
+      ...GPT_5_6_API_CAPABILITIES,
     },
     {
       id: "openai.gpt-5.6-luna",
       name: "GPT-5.6 Luna (Bedrock Mantle)",
-      toolCalling: true,
-      supportsVision: true,
-      contextLength: 1050000,
-      maxOutputTokens: 128000,
+      ...GPT_5_6_API_CAPABILITIES,
     },
     {
       id: "openai.gpt-5.5",
