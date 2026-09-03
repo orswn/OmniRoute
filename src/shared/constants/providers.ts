@@ -249,6 +249,9 @@ const EXPLICIT_OPTIONAL_APIKEY_PROVIDER_IDS = new Set([
   "gitlawb",
   "gitlawb-gmi",
   "naga-ac",
+  // Bedrock Mantle: uses AWS SigV4 credentials from the environment, SSO cache,
+  // or providerSpecificData rather than requiring a static API key.
+  "bedrock-mantle",
   // UC (uncensored.com) persona: un-metered subscription chat with NO API key —
   // auth is a durable Clerk credential stored in providerSpecificData, from which
   // the executor mints a short-lived session token per connect.

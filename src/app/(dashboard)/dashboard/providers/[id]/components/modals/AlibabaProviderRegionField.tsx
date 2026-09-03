@@ -13,15 +13,22 @@ import { providerText } from "../../providerPageHelpers";
 export function getProviderRegionConfig(provider?: string) {
   const isAlibabaRegional = isAlibabaRegionalProvider(provider);
   const isBedrock = provider === "bedrock";
+  const isBedrockMantle = provider === "bedrock-mantle";
   return {
     defaultRegion: isAlibabaRegional
       ? getDefaultAlibabaProviderRegion(provider)
       : isBedrock
         ? "eu-west-2"
-        : "us-central1",
+        : isBedrockMantle
+          ? "us-east-1"
+          : "us-central1",
     isAlibabaRegional,
     showsRegion:
-      isAlibabaRegional || isBedrock || provider === "vertex" || provider === "vertex-partner",
+      isAlibabaRegional ||
+      isBedrock ||
+      isBedrockMantle ||
+      provider === "vertex" ||
+      provider === "vertex-partner",
   };
 }
 
