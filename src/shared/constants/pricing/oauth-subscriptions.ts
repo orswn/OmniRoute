@@ -5,6 +5,7 @@
 import {
   CLAUDE_OPUS_5_PRICING,
   GEMINI_3_7_FLASH_PROMO_PRICING,
+  GEMINI_3_8_FLASH_PROMO_PRICING,
   GPT_5_3_CODEX_PRICING,
   GPT_5_5_PRICING,
   GPT_5_6_LUNA_PRICING,
@@ -13,6 +14,9 @@ import {
 } from "./shared-tiers";
 
 const ANTIGRAVITY_GEMINI_3_7_PRICING = {
+  "gemini-3.8-flash-low": GEMINI_3_8_FLASH_PROMO_PRICING,
+  "gemini-3.8-flash-medium": GEMINI_3_8_FLASH_PROMO_PRICING,
+  "gemini-3.8-flash-high": GEMINI_3_8_FLASH_PROMO_PRICING,
   "gemini-3.7-flash-low": GEMINI_3_7_FLASH_PROMO_PRICING,
   "gemini-3.7-flash-medium": GEMINI_3_7_FLASH_PROMO_PRICING,
   "gemini-3.7-flash-high": GEMINI_3_7_FLASH_PROMO_PRICING,
@@ -395,6 +399,7 @@ export const DEFAULT_PRICING_OAUTH = {
       reasoning: 4.5,
       cache_creation: 0.5,
     },
+    "gemini-3.8-flash": GEMINI_3_8_FLASH_PROMO_PRICING,
     "gemini-3.7-flash": GEMINI_3_7_FLASH_PROMO_PRICING,
     "gemini-2.5-pro": {
       input: 2.0,

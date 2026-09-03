@@ -41,7 +41,7 @@ export const GPT_5_6_LUNA_PRICING = {
   cache_creation: 1.25,
 };
 
-// Gemini 3.7 Flash introductory pricing through 2026-12-31. Google and
+// Gemini 3.7 & 3.8 Flash introductory pricing through 2026-12-31. Google and
 // GitHub Copilot both publish the same current token rates; standard pricing
 // becomes $1.50/$7.50/$0.15 (input/output/cached input) on 2027-01-01.
 export const GEMINI_3_7_FLASH_PROMO_PRICING = {
@@ -51,6 +51,8 @@ export const GEMINI_3_7_FLASH_PROMO_PRICING = {
   reasoning: 3.75,
   cache_creation: 0.75,
 };
+
+export const GEMINI_3_8_FLASH_PROMO_PRICING = GEMINI_3_7_FLASH_PROMO_PRICING;
 
 export const CLAUDE_FABLE_5_1_PRICING = {
   input: 15.0,

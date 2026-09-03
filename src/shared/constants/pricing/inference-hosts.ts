@@ -141,6 +141,13 @@ export const DEFAULT_PRICING_INFERENCE = {
       cache_creation: 0.0583,
     },
     // Live public catalog rate checked 2026-08-16.
+    "gemini-3.8-flash": {
+      input: 0.75,
+      output: 3.75,
+      cached: 0.075,
+      reasoning: 3.75,
+      cache_creation: 0.75,
+    },
     "gemini-3.7-flash": {
       input: 0.525,
       output: 2.625,
