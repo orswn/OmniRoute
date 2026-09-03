@@ -325,6 +325,7 @@ const LOBE_PROVIDER_ALIASES = {
   "bailian-coding-plan": "Bailian",
   baseten: "Baseten",
   bedrock: "Bedrock",
+  "bedrock-mantle": "Bedrock",
   bfl: "Bfl",
   "black-forest-labs": "Bfl",
   cerebras: "Cerebras",
