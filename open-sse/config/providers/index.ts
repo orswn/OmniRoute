@@ -35,6 +35,7 @@ import { claudeProvider } from "./registry/claude/index.ts";
 import { claude_webProvider } from "./registry/claude/web/index.ts";
 import { cloudflarePlaygroundProvider } from "./registry/cloudflare-playground/index.ts";
 import { bedrockProvider } from "./registry/bedrock/index.ts";
+import { bedrockMantleProvider } from "./registry/bedrock-mantle/index.ts";
 import { inner_aiProvider } from "./registry/inner-ai/index.ts";
 import { qoderProvider } from "./registry/qoder/index.ts";
 import { xiaomi_mimoProvider } from "./registry/xiaomi-mimo/index.ts";
@@ -305,6 +306,7 @@ export const REGISTRY: Record<string, RegistryEntry> = {
   "claude-web": claude_webProvider,
   "cloudflare-playground": cloudflarePlaygroundProvider,
   bedrock: bedrockProvider,
+  "bedrock-mantle": bedrockMantleProvider,
   "inner-ai": inner_aiProvider,
   qoder: qoderProvider,
   "xiaomi-mimo": xiaomi_mimoProvider,

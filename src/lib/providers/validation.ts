@@ -270,6 +270,10 @@ export async function validateProviderApiKey({ provider, apiKey, providerSpecifi
     oci: validateOciProvider,
     sap: validateSapProvider,
     bedrock: validateBedrockProvider,
+    "bedrock-mantle": async () => {
+      // Bedrock Mantle validates via AWS SigV4 credentials (SSO profile or IAM keys).
+      return { valid: true, error: null, method: "sigv4_provider_chain" };
+    },
     modal: ({ apiKey, providerSpecificData }: any) => {
       // Modal is bring-your-own-deploy — it requires a Base URL pointing to the user's
       // OpenAI-compatible Modal app. Without it, validateOpenAILikeProvider would build an

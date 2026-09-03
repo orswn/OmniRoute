@@ -46,6 +46,21 @@ export const APIKEY_PROVIDERS_ENTERPRISE = {
       "Native Bedrock integration: model discovery uses Bedrock foundation models and inference profiles, while chat uses the regional Bedrock Runtime Converse/ConverseStream APIs.",
     passthroughModels: true,
   },
+  "bedrock-mantle": {
+    id: "bedrock-mantle",
+    serviceKinds: ["llm"],
+    alias: "mantle",
+    name: "Amazon Bedrock Mantle",
+    icon: "cloud",
+    color: "#FF9900",
+    textIcon: "BM",
+    website: "https://aws.amazon.com/bedrock",
+    authHint:
+      "Use AWS SSO credentials or IAM keys with SigV4 signing. Set profile to your configured AWS CLI profile (e.g. boon-bedrock-codex).",
+    apiHint:
+      "OpenAI-compatible wire format with AWS SigV4 signing against Bedrock Mantle OpenAI endpoints.",
+    passthroughModels: true,
+  },
   watsonx: {
     id: "watsonx",
     serviceKinds: ["llm"],

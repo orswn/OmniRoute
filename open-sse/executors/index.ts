@@ -35,6 +35,9 @@ const lazyExecutors: Record<string, () => Promise<BaseExecutor>> = {
   kiro: () => import("./kiro.ts").then((m) => new m.KiroExecutor()),
   "amazon-q": () => import("./kiro.ts").then((m) => new m.KiroExecutor("amazon-q")),
   bedrock: () => import("./bedrock.ts").then((m) => new m.BedrockExecutor()),
+  "bedrock-mantle": () => import("./bedrockMantle.ts").then((m) => new m.BedrockMantleExecutor()),
+  mantle: () => import("./bedrockMantle.ts").then((m) => new m.BedrockMantleExecutor()),
+  bm: () => import("./bedrockMantle.ts").then((m) => new m.BedrockMantleExecutor()),
   codex: () => import("./codex.ts").then((m) => new m.CodexExecutor()),
   "codex-app-server": () =>
     import("./codex-app-server.ts").then(

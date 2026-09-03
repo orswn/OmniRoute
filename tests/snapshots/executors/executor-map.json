@@ -65,10 +65,20 @@
       "configSource": "bedrock",
       "provider": "bedrock"
     },
+    "bedrock-mantle": {
+      "className": "BedrockMantleExecutor",
+      "configSource": "bedrock-mantle",
+      "provider": "bedrock-mantle"
+    },
     "blackbox-web": {
       "className": "BlackboxWebExecutor",
       "configSource": "<custom-config>",
       "provider": "blackbox-web"
+    },
+    "bm": {
+      "className": "BedrockMantleExecutor",
+      "configSource": "bedrock-mantle",
+      "provider": "bedrock-mantle"
     },
     "cbcn": {
       "className": "CodeBuddyCnExecutor",
@@ -425,6 +435,11 @@
       "configSource": "<custom-config>",
       "provider": "lmarena"
     },
+    "mantle": {
+      "className": "BedrockMantleExecutor",
+      "configSource": "bedrock-mantle",
+      "provider": "bedrock-mantle"
+    },
     "maxai": {
       "className": "MaxAiExecutor",
       "configSource": "maxai",
@@ -671,6 +686,6 @@
       "provider": "zai-web"
     }
   },
-  "keyCount": 134,
+  "keyCount": 137,
   "sharedInstances": []
 }
