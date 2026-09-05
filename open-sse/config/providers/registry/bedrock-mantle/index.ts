@@ -11,29 +11,29 @@ export const bedrockMantleProvider: RegistryEntry = {
   models: [
     {
       id: "openai.gpt-5.6-sol",
-      name: "GPT-5.6 Sol (Bedrock Mantle)",
+      name: "GPT-5.6 Sol",
       ...GPT_5_6_API_CAPABILITIES,
     },
     {
       id: "openai.gpt-5.6-terra",
-      name: "GPT-5.6 Terra (Bedrock Mantle)",
+      name: "GPT-5.6 Terra",
       ...GPT_5_6_API_CAPABILITIES,
     },
     {
       id: "openai.gpt-5.6-luna",
-      name: "GPT-5.6 Luna (Bedrock Mantle)",
+      name: "GPT-5.6 Luna",
       ...GPT_5_6_API_CAPABILITIES,
     },
     {
       id: "openai.gpt-6-astra",
-      name: "GPT-6 Astra (Bedrock Mantle)",
+      name: "GPT-6 Astra",
       ...GPT_5_6_API_CAPABILITIES,
       supportedThinkingEfforts: ["low", "medium", "high", "xhigh", "max"],
       unsupportedParams: ["temperature", "top_p", "top_logprobs", "logprobs"],
     },
     {
       id: "openai.gpt-5.5",
-      name: "GPT-5.5 (Bedrock Mantle)",
+      name: "GPT-5.5",
       toolCalling: true,
       supportsVision: true,
       contextLength: 272000,
@@ -41,7 +41,7 @@ export const bedrockMantleProvider: RegistryEntry = {
     },
     {
       id: "openai.gpt-5.4",
-      name: "GPT-5.4 (Bedrock Mantle)",
+      name: "GPT-5.4",
       toolCalling: true,
       supportsVision: true,
       contextLength: 272000,

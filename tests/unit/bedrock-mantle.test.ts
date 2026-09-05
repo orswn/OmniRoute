@@ -160,7 +160,7 @@ test("Bedrock Mantle GPT-5.6 models declare supported thinking efforts", async (
 
   const astra = bedrockMantleProvider.models.find((m) => m.id === "openai.gpt-6-astra");
   assert.ok(astra, "openai.gpt-6-astra must exist in bedrockMantleProvider.models");
-  assert.equal(astra.name, "GPT-6 Astra (Bedrock Mantle)");
+  assert.equal(astra.name, "GPT-6 Astra");
   assert.equal(astra.supportsReasoning, true);
   assert.deepEqual(astra.supportedThinkingEfforts, ["low", "medium", "high", "xhigh", "max"]);
 
