@@ -54,14 +54,6 @@ export const GEMINI_3_7_FLASH_PROMO_PRICING = {
 
 export const GEMINI_3_8_FLASH_PROMO_PRICING = GEMINI_3_7_FLASH_PROMO_PRICING;
 
-export const CLAUDE_FABLE_5_1_PRICING = {
-  input: 15.0,
-  output: 75.0,
-  cached: 7.5,
-  reasoning: 112.5,
-  cache_creation: 15.0,
-};
-
 export const CLAUDE_FABLE_5_PRICING = {
   input: 15.0,
   output: 75.0,
