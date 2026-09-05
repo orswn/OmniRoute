@@ -80,10 +80,9 @@ export const COLLECTORS = [
   // exige o sync (substitui as âncoras textuais de glob que existiam nos workflows).
   {
     glob: "tests/unit/*.test.ts",
-    sources: ["package.json", ".github/workflows/ci.yml", ".github/workflows/quality.yml"],
+    sources: ["package.json", ".github/workflows/ci.yml"],
     anchors: {
       ".github/workflows/ci.yml": "test:unit:ci:shard",
-      ".github/workflows/quality.yml": "test:unit:ci:shard",
     },
   },
   // Node native runner — test:integration (top-level only; tests/integration/services/ NÃO roda)
