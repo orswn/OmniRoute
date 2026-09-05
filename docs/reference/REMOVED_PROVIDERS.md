@@ -1,6 +1,7 @@
 ---
-title: "Providers Removed at Operator Request"
-description: "Durable record of services removed from OmniRoute at the operator's request."
+title: "Removed Providers"
+version: 3.8.51
+lastUpdated: 2026-09-03
 ---
 
 # Providers removed at their operator's request
