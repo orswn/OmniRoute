@@ -25,6 +25,13 @@ export const bedrockMantleProvider: RegistryEntry = {
       ...GPT_5_6_API_CAPABILITIES,
     },
     {
+      id: "openai.gpt-6-astra",
+      name: "GPT-6 Astra (Bedrock Mantle)",
+      ...GPT_5_6_API_CAPABILITIES,
+      supportedThinkingEfforts: ["low", "medium", "high", "xhigh", "max"],
+      unsupportedParams: ["temperature", "top_p", "top_logprobs", "logprobs"],
+    },
+    {
       id: "openai.gpt-5.5",
       name: "GPT-5.5 (Bedrock Mantle)",
       toolCalling: true,

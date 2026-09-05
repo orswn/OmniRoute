@@ -4,12 +4,14 @@ export const MANTLE_MODEL_IDS = new Set([
   "openai.gpt-5.6-luna",
   "openai.gpt-5.5",
   "openai.gpt-5.4",
+  "openai.gpt-6-astra",
 ]);
 
 export const GPT56_MODEL_IDS = new Set([
   "openai.gpt-5.6-sol",
   "openai.gpt-5.6-terra",
   "openai.gpt-5.6-luna",
+  "openai.gpt-6-astra",
 ]);
 
 const TOOL_RESULT_IMAGE_PLACEHOLDER = "(image omitted from tool result)";
