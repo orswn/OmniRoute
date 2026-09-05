@@ -136,3 +136,36 @@ test("BedrockMantleExecutor routes GPT-5.6 through Responses", () => {
   const legacyUrl = executor.buildUrl("openai.gpt-5.5", false, 0, null);
   assert.equal(legacyUrl, "https://bedrock-mantle.us-east-1.api.aws/openai/v1/chat/completions");
 });
+
+test("Bedrock Mantle GPT-5.6 models declare supported thinking efforts", async () => {
+  const { bedrockMantleProvider } =
+    await import("../../open-sse/config/providers/registry/bedrock-mantle/index.ts");
+  const { getThinkingCapabilityFields } =
+    await import("../../src/app/api/v1/models/catalogHelpers.ts");
+
+  const sol = bedrockMantleProvider.models.find((m) => m.id === "openai.gpt-5.6-sol");
+  assert.ok(sol, "openai.gpt-5.6-sol must exist in bedrockMantleProvider.models");
+  assert.equal(sol.supportsReasoning, true);
+  assert.deepEqual(sol.supportedThinkingEfforts, ["low", "medium", "high", "xhigh", "max"]);
+
+  const terra = bedrockMantleProvider.models.find((m) => m.id === "openai.gpt-5.6-terra");
+  assert.ok(terra, "openai.gpt-5.6-terra must exist in bedrockMantleProvider.models");
+  assert.equal(terra.supportsReasoning, true);
+  assert.deepEqual(terra.supportedThinkingEfforts, ["low", "medium", "high", "xhigh", "max"]);
+
+  const luna = bedrockMantleProvider.models.find((m) => m.id === "openai.gpt-5.6-luna");
+  assert.ok(luna, "openai.gpt-5.6-luna must exist in bedrockMantleProvider.models");
+  assert.equal(luna.supportsReasoning, true);
+  assert.deepEqual(luna.supportedThinkingEfforts, ["low", "medium", "high", "xhigh", "max"]);
+
+  const fields = getThinkingCapabilityFields(
+    "bedrock-mantle",
+    sol.id,
+    sol.supportsReasoning,
+    sol.supportedThinkingEfforts,
+    false
+  );
+  assert.equal(fields.thinking, true);
+  assert.equal(fields.supportsThinking, true);
+  assert.deepEqual(fields.effort_tiers, ["low", "medium", "high", "xhigh", "max"]);
+});
