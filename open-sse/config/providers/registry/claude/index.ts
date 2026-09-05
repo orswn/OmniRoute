@@ -52,6 +52,8 @@ export const claudeProvider: RegistryEntry = {
       name: "Claude Opus 5",
       contextLength: 1000000,
       maxOutputTokens: 128000,
+      supportsReasoning: true,
+      supportedThinkingEfforts: ["low", "medium", "high", "xhigh", "max"],
       supportsXHighEffort: true,
       unsupportedParams: ["temperature", "top_p", "top_k"],
     },
@@ -88,6 +90,8 @@ export const claudeProvider: RegistryEntry = {
       name: "Claude Sonnet 5",
       contextLength: 1000000,
       maxOutputTokens: 128000,
+      supportsReasoning: true,
+      supportedThinkingEfforts: ["low", "medium", "high", "xhigh", "max"],
       // Sonnet 5 is the first Sonnet-tier model to support xhigh effort — do NOT copy
       // the `supportsXHighEffort: false` from the older claude-sonnet-4-6/4-5 entries.
       supportsXHighEffort: true,

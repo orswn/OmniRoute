@@ -17,6 +17,7 @@ import {
   maybeOmitCatalogModelName,
   getThinkingCapabilityFields,
   getConnectionScopedEffortTiers,
+  mergeComboCapabilities,
 } from "../../src/app/api/v1/models/catalogHelpers.ts";
 import {
   qualifyOpenRouterModelId,
@@ -257,6 +258,28 @@ test("catalogRequest: isCodexModelCatalogClient detects codex originator/user-ag
     headers: { "user-agent": "curl/8.0" },
   });
   assert.equal(isCodexModelCatalogClient(other), false);
+});
+
+test("catalogHelpers: mergeComboCapabilities computes intersection of effort tiers", () => {
+  const merged = mergeComboCapabilities([
+    {
+      capabilities: {
+        thinking: true,
+        supportsThinking: true,
+        effort_tiers: ["low", "medium", "high", "xhigh", "max"],
+      },
+    },
+    {
+      capabilities: {
+        thinking: true,
+        supportsThinking: true,
+        effort_tiers: ["none", "low", "medium", "high", "xhigh", "max"],
+      },
+    },
+  ]);
+  assert.equal(merged.thinking, true);
+  assert.equal(merged.supportsThinking, true);
+  assert.deepEqual(merged.effort_tiers, ["low", "medium", "high", "xhigh", "max"]);
 });
 
 test("host catalog.ts preserves its public API after the extraction", async () => {

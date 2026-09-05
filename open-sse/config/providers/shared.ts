@@ -311,6 +311,7 @@ export const GPT_5_6_CODEX_CAPABILITIES = {
   targetFormat: "openai-responses",
   toolCalling: true,
   supportsReasoning: true,
+  supportedThinkingEfforts: ["low", "medium", "high", "xhigh", "max"],
   supportsVision: true,
   supportsXHighEffort: true,
   contextLength: 872000,
