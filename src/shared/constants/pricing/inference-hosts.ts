@@ -2,6 +2,33 @@
  * Pricing data — inference-hosts family (serverless GPU / OSS-model hosts + aggregator gateways).
  * Pure data; merged by default-pricing.ts via spread (god-file decomposition; semantic split).
  */
+import {
+  MANTLE_GPT_5_6_SOL_PRICING,
+  MANTLE_GPT_5_6_TERRA_PRICING,
+  MANTLE_GPT_5_6_LUNA_PRICING,
+  MANTLE_GPT_5_5_PRICING,
+  MANTLE_GPT_5_4_PRICING,
+  MANTLE_GPT_5_6_CYBER_PRICING,
+  MANTLE_GPT_DAYBREAK_BLUE_5_6_SOL_PRICING,
+} from "./shared-tiers";
+
+const BEDROCK_MANTLE_PRICING = {
+  "openai.gpt-5.6-sol": MANTLE_GPT_5_6_SOL_PRICING,
+  "gpt-5.6-sol": MANTLE_GPT_5_6_SOL_PRICING,
+  "openai.gpt-5.6-terra": MANTLE_GPT_5_6_TERRA_PRICING,
+  "gpt-5.6-terra": MANTLE_GPT_5_6_TERRA_PRICING,
+  "openai.gpt-5.6-luna": MANTLE_GPT_5_6_LUNA_PRICING,
+  "gpt-5.6-luna": MANTLE_GPT_5_6_LUNA_PRICING,
+  "openai.gpt-5.5": MANTLE_GPT_5_5_PRICING,
+  "gpt-5.5": MANTLE_GPT_5_5_PRICING,
+  "openai.gpt-5.4": MANTLE_GPT_5_4_PRICING,
+  "gpt-5.4": MANTLE_GPT_5_4_PRICING,
+  "openai.gpt-5.6-cyber": MANTLE_GPT_5_6_CYBER_PRICING,
+  "gpt-5.6-cyber": MANTLE_GPT_5_6_CYBER_PRICING,
+  "openai.gpt-daybreak-blue-5.6-sol": MANTLE_GPT_DAYBREAK_BLUE_5_6_SOL_PRICING,
+  "gpt-daybreak-blue-5.6-sol": MANTLE_GPT_DAYBREAK_BLUE_5_6_SOL_PRICING,
+};
+
 export const DEFAULT_PRICING_INFERENCE = {
   agentrouter: {
     auto: { input: 2.0, output: 8.0 },
@@ -496,4 +523,6 @@ export const DEFAULT_PRICING_INFERENCE = {
       cache_creation: 0,
     },
   },
+  "bedrock-mantle": { ...BEDROCK_MANTLE_PRICING },
+  mantle: { ...BEDROCK_MANTLE_PRICING },
 };

@@ -283,3 +283,93 @@ export const GLM_PRICING = {
     cache_creation: 0.2,
   },
 };
+
+// Bedrock Mantle OpenAI models (In-Region pricing)
+// https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-openai.html
+export const MANTLE_GPT_5_6_SOL_PRICING = {
+  input: 4.4,
+  output: 22.0,
+  cached: 0.44,
+  reasoning: 22.0,
+  cache_creation: 5.5,
+  long_context: {
+    threshold: 272000,
+    input: 8.8,
+    output: 33.0,
+    cached: 0.88,
+    reasoning: 33.0,
+    cache_creation: 11.0,
+  },
+};
+
+export const MANTLE_GPT_5_6_TERRA_PRICING = {
+  input: 2.2,
+  output: 13.2,
+  cached: 0.22,
+  reasoning: 13.2,
+  cache_creation: 2.75,
+  long_context: {
+    threshold: 272000,
+    input: 4.4,
+    output: 19.8,
+    cached: 0.44,
+    reasoning: 19.8,
+    cache_creation: 5.5,
+  },
+};
+
+export const MANTLE_GPT_5_6_LUNA_PRICING = {
+  input: 0.22,
+  output: 1.32,
+  cached: 0.022,
+  reasoning: 1.32,
+  cache_creation: 0.275,
+  long_context: {
+    threshold: 272000,
+    input: 0.44,
+    output: 1.98,
+    cached: 0.044,
+    reasoning: 1.98,
+    cache_creation: 0.55,
+  },
+};
+
+export const MANTLE_GPT_5_5_PRICING = {
+  input: 5.5,
+  output: 33.0,
+  cached: 0.55,
+  reasoning: 33.0,
+  cache_creation: 5.5,
+};
+
+export const MANTLE_GPT_5_4_PRICING = {
+  input: 2.75,
+  output: 16.5,
+  cached: 0.275,
+  reasoning: 16.5,
+  cache_creation: 2.75,
+};
+
+export const MANTLE_GPT_5_6_CYBER_PRICING = {
+  input: 13.75,
+  output: 82.5,
+  cached: 1.375,
+  reasoning: 82.5,
+  cache_creation: 17.1875,
+};
+
+export const MANTLE_GPT_DAYBREAK_BLUE_5_6_SOL_PRICING = {
+  input: 5.5,
+  output: 33.0,
+  cached: 0.55,
+  reasoning: 33.0,
+  cache_creation: 6.875,
+  long_context: {
+    threshold: 272000,
+    input: 11.0,
+    output: 49.5,
+    cached: 1.1,
+    reasoning: 49.5,
+    cache_creation: 13.75,
+  },
+};
