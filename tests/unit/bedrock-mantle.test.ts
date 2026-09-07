@@ -48,7 +48,10 @@ test("Bedrock Mantle AWS SigV4 credential resolution and signing", async () => {
   const signed = await signBedrockMantleRequest({
     method: "POST",
     url: "https://bedrock-mantle.us-east-1.api.aws/openai/v1/chat/completions",
-    headers: { "content-type": "application/json" },
+    headers: {
+      "content-type": "application/json",
+      Authorization: "Bearer stale-provider-key",
+    },
     body: JSON.stringify({ model: "openai.gpt-5.6-sol" }),
     providerSpecificData: { accessKeyId: "AKIA_TEST", region: "us-east-1" },
     apiKey: "SECRET_TEST",
@@ -59,6 +62,7 @@ test("Bedrock Mantle AWS SigV4 credential resolution and signing", async () => {
     signed.Authorization,
     /^AWS4-HMAC-SHA256 Credential=AKIA_TEST\/20260903\/us-east-1\/bedrock-mantle\/aws4_request/
   );
+  assert.equal(signed.authorization, undefined);
   assert.equal(signed["x-amz-date"], "20260903T120000Z");
   assert.ok(signed["x-amz-content-sha256"]);
 });

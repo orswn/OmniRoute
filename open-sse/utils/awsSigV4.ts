@@ -65,7 +65,11 @@ function normalizeHeaders(headers: Record<string, string>) {
   const normalized: Record<string, string> = {};
   for (const [key, value] of Object.entries(headers)) {
     if (value === undefined || value === null) continue;
-    normalized[key.toLowerCase()] = String(value).trim().replace(/\s+/g, " ");
+    const normalizedKey = key.toLowerCase();
+    // SigV4 owns the Authorization header. Preserving a caller's bearer
+    // value creates duplicate case-insensitive headers after signing.
+    if (normalizedKey === "authorization") continue;
+    normalized[normalizedKey] = String(value).trim().replace(/\s+/g, " ");
   }
   return normalized;
 }
