@@ -464,6 +464,14 @@ export function openaiToClaudeRequest(model, body, stream, credentials = null) {
   if (body.tool_choice) {
     result.tool_choice = convertOpenAIToolChoice(body.tool_choice);
   }
+  if (body.parallel_tool_calls === false) {
+    result.tool_choice = {
+      ...(typeof result.tool_choice === "object" && result.tool_choice
+        ? result.tool_choice
+        : { type: "auto" }),
+      disable_parallel_tool_use: true,
+    };
+  }
 
   // response_format: inject JSON structured output instruction into system prompt.
   // Claude doesn't natively support response_format, so we insert a system-level instruction.

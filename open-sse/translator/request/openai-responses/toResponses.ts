@@ -393,6 +393,9 @@ export function openaiToOpenAIResponsesRequest(
   }
 
   // Pass through relevant fields
+  if (root.parallel_tool_calls !== undefined) {
+    result.parallel_tool_calls = root.parallel_tool_calls;
+  }
   if (root.previous_response_id !== undefined) {
     result.previous_response_id = root.previous_response_id;
   }
