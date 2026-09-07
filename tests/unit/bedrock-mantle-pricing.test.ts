@@ -25,6 +25,15 @@ test("Bedrock Mantle pricing is registered for mantle and bedrock-mantle", () =>
     assert.equal(longContext.cached, 0.88);
     assert.equal(longContext.cache_creation, 11.0);
 
+    assert.ok(Array.isArray(solPricing.tiers), "missing tiers array for sol");
+    const solTier = (solPricing.tiers as Array<Record<string, unknown>>)[0];
+    assert.equal(solTier.threshold, 272000);
+    assert.equal(solTier.inputTokensAbove, 272000);
+    assert.equal(solTier.input, 8.8);
+    assert.equal(solTier.output, 33.0);
+    assert.equal(solTier.cached, 0.88);
+    assert.equal(solTier.cache_creation, 11.0);
+
     const terraPricing = getPricingForModel(provider, "openai.gpt-5.6-terra");
     assert.ok(terraPricing, `missing terra pricing for ${provider}`);
     assert.equal(terraPricing.input, 2.2);
@@ -132,4 +141,42 @@ test("calculateCost async resolves bedrock-mantle with short and long context", 
   // 500 * 33.0 / 1M = 0.0165
   // total = 2.6565
   assert.equal(Math.round(longCost * 1e6) / 1e6, 2.6565);
+});
+
+test("OpenAI gpt-6-astra pricing registers tiers and computes short vs long context", () => {
+  const astraPricing = getPricingForModel("openai", "gpt-6-astra");
+  assert.ok(astraPricing, "missing openai/gpt-6-astra pricing");
+  assert.equal(astraPricing.input, 10.0);
+  assert.equal(astraPricing.output, 50.0);
+  assert.equal(astraPricing.cached, 1.0);
+  assert.equal(astraPricing.cache_creation, 12.5);
+
+  assert.ok(Array.isArray(astraPricing.tiers), "missing tiers for gpt-6-astra");
+  const astraTier = (astraPricing.tiers as Array<Record<string, unknown>>)[0];
+  assert.equal(astraTier.threshold, 272000);
+  assert.equal(astraTier.inputTokensAbove, 272000);
+  assert.equal(astraTier.input, 20.0);
+  assert.equal(astraTier.output, 75.0);
+  assert.equal(astraTier.cached, 2.0);
+  assert.equal(astraTier.cache_creation, 25.0);
+
+  // Short context: 100,000 input, 1,000 output
+  // 100,000 * 10 / 1M = 1.0
+  // 1,000 * 50 / 1M = 0.05
+  // total = 1.05
+  const shortCost = computeCostFromPricing(astraPricing, {
+    prompt_tokens: 100000,
+    completion_tokens: 1000,
+  });
+  assert.equal(Math.round(shortCost * 1e6) / 1e6, 1.05);
+
+  // Long context: 300,000 input (>272K), 1,000 output
+  // 300,000 * 20 / 1M = 6.0
+  // 1,000 * 75 / 1M = 0.075
+  // total = 6.075
+  const longCost = computeCostFromPricing(astraPricing, {
+    prompt_tokens: 300000,
+    completion_tokens: 1000,
+  });
+  assert.equal(Math.round(longCost * 1e6) / 1e6, 6.075);
 });

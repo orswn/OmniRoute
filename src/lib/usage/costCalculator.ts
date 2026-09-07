@@ -149,12 +149,25 @@ export function computeCostFromPricing(
   const cacheCreationTokens = tokens.cacheCreation ?? tokens.cache_creation_input_tokens ?? 0;
 
   let effectivePricing = pricing;
-  const longContext = (pricing.long_context ?? pricing.longContext) as
-    Record<string, unknown> | undefined;
-  if (longContext && typeof longContext === "object") {
-    const threshold = toNumber(longContext.threshold, 272000);
-    if (inputTokens > threshold) {
-      effectivePricing = { ...pricing, ...longContext };
+  if (Array.isArray(pricing.tiers)) {
+    let matchedThreshold = -1;
+    for (const tier of pricing.tiers as Array<Record<string, unknown>>) {
+      if (tier && typeof tier === "object") {
+        const threshold = toNumber(tier.inputTokensAbove ?? tier.threshold, -1);
+        if (threshold >= 0 && inputTokens > threshold && threshold > matchedThreshold) {
+          effectivePricing = { ...pricing, ...tier };
+          matchedThreshold = threshold;
+        }
+      }
+    }
+  } else {
+    const longContext = (pricing.long_context ?? pricing.longContext) as
+      Record<string, unknown> | undefined;
+    if (longContext && typeof longContext === "object") {
+      const threshold = toNumber(longContext.threshold, 272000);
+      if (inputTokens > threshold) {
+        effectivePricing = { ...pricing, ...longContext };
+      }
     }
   }
 
