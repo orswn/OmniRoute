@@ -423,3 +423,6 @@ export const DEFAULT_PRICING_FRONTIER = {
     },
   },
 };
+
+(DEFAULT_PRICING_FRONTIER as Record<string, unknown>).ds = DEFAULT_PRICING_FRONTIER.deepseek;
+(DEFAULT_PRICING_FRONTIER as Record<string, unknown>).bb = DEFAULT_PRICING_FRONTIER.blackbox;

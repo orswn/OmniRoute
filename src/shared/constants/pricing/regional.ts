@@ -2,9 +2,7 @@
  * Pricing data — regional family (China + other regional providers (incl. GLM/Zhipu)).
  * Pure data; merged by default-pricing.ts via spread (god-file decomposition; semantic split).
  */
-import {
-  GLM_PRICING,
-} from "./shared-tiers";
+import { GLM_PRICING } from "./shared-tiers";
 
 export const DEFAULT_PRICING_REGIONAL = {
   glm: GLM_PRICING,
@@ -166,3 +164,7 @@ export const DEFAULT_PRICING_REGIONAL = {
     },
   },
 };
+
+(DEFAULT_PRICING_REGIONAL as Record<string, unknown>)["kimi-coding"] = DEFAULT_PRICING_REGIONAL.kmc;
+(DEFAULT_PRICING_REGIONAL as Record<string, unknown>)["kimi-coding-apikey"] =
+  DEFAULT_PRICING_REGIONAL.kmca;

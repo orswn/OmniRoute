@@ -496,3 +496,9 @@ export const DEFAULT_PRICING_OAUTH = {
     "gpt-5.6-luna": GPT_5_6_LUNA_PRICING,
   },
 };
+
+(DEFAULT_PRICING_OAUTH as Record<string, unknown>).claude = DEFAULT_PRICING_OAUTH.cc;
+(DEFAULT_PRICING_OAUTH as Record<string, unknown>).codex = DEFAULT_PRICING_OAUTH.cx;
+(DEFAULT_PRICING_OAUTH as Record<string, unknown>).qoder = DEFAULT_PRICING_OAUTH.if;
+(DEFAULT_PRICING_OAUTH as Record<string, unknown>).github = DEFAULT_PRICING_OAUTH.gh;
+(DEFAULT_PRICING_OAUTH as Record<string, unknown>).kr = DEFAULT_PRICING_OAUTH.kiro;

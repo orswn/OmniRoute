@@ -526,3 +526,7 @@ export const DEFAULT_PRICING_INFERENCE = {
   "bedrock-mantle": { ...BEDROCK_MANTLE_PRICING },
   mantle: { ...BEDROCK_MANTLE_PRICING },
 };
+
+(DEFAULT_PRICING_INFERENCE as Record<string, unknown>).hyp = DEFAULT_PRICING_INFERENCE.hyperbolic;
+(DEFAULT_PRICING_INFERENCE as Record<string, unknown>).cinf =
+  DEFAULT_PRICING_INFERENCE.cheaperinference;
