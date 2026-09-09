@@ -175,8 +175,13 @@ test("BedrockMantleExecutor routes GPT-5.6 through Responses", () => {
 test("Bedrock Mantle GPT-5.6 models declare supported thinking efforts", async () => {
   const { bedrockMantleProvider } =
     await import("../../open-sse/config/providers/registry/bedrock-mantle/index.ts");
+  const { providerUsesAuthoritativeLiveCatalog } =
+    await import("../../open-sse/config/providerRegistry.ts");
   const { getThinkingCapabilityFields } =
     await import("../../src/app/api/v1/models/catalogHelpers.ts");
+
+  assert.equal(bedrockMantleProvider.liveCatalogAuthoritative, false);
+  assert.equal(providerUsesAuthoritativeLiveCatalog("bedrock-mantle"), false);
 
   const sol = bedrockMantleProvider.models.find((m) => m.id === "openai.gpt-5.6-sol");
   assert.ok(sol, "openai.gpt-5.6-sol must exist in bedrockMantleProvider.models");

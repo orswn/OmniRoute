@@ -8,6 +8,7 @@ export const bedrockMantleProvider: RegistryEntry = {
   authType: "apikey",
   authHeader: "bearer",
   defaultContextLength: 1050000,
+  liveCatalogAuthoritative: false,
   models: [
     {
       id: "openai.gpt-5.6-sol",
