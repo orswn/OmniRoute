@@ -330,7 +330,9 @@ function addModelOption(
     existing.source = input.source;
   }
   if (input.customPrecedence) {
-    existing.name = toStringOrNull(input.name) || existing.name;
+    if (input.name && (input.name !== modelId || !existing.name || existing.name === existing.id)) {
+      existing.name = input.name;
+    }
     if (input.supportedEndpoints?.length) existing.supportedEndpoints = input.supportedEndpoints;
     if (toStringOrNull(input.apiFormat)) existing.apiFormat = input.apiFormat || undefined;
     if (typeof input.contextLength === "number") existing.contextLength = input.contextLength;

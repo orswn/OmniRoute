@@ -14,6 +14,14 @@ export function mergeCustomModelMetadata<T extends Record<string, unknown>>(
   const definedCustom = Object.fromEntries(
     Object.entries(custom).filter(([, value]) => value !== undefined)
   );
+  if (
+    typeof custom.id === "string" &&
+    custom.name === custom.id &&
+    typeof base.name === "string" &&
+    base.name !== base.id
+  ) {
+    delete definedCustom.name;
+  }
   return { ...base, ...definedCustom } as T;
 }
 
