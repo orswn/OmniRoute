@@ -5,6 +5,7 @@ import {
   signBedrockMantleRequest,
   resolveBedrockMantleRegion,
   buildBedrockMantleBaseUrl,
+  isAstraModel,
 } from "../services/bedrockMantleAuth.ts";
 import { normalizeMantlePayload } from "../utils/bedrockMantlePayload.ts";
 
@@ -25,10 +26,16 @@ export class BedrockMantleExecutor extends DefaultExecutor {
         : "/chat/completions";
     const configuredBase = credentials?.providerSpecificData?.baseUrl;
     if (typeof configuredBase === "string" && configuredBase.trim().length > 0) {
+      const match = configuredBase.match(/^https?:\/\/bedrock-mantle\.([a-z0-9-]+)\.api\.aws/i);
+      if (match && isAstraModel(model) && match[1] !== "us-west-2") {
+        const region = resolveBedrockMantleRegion(credentials?.providerSpecificData, model);
+        const base = buildBedrockMantleBaseUrl(region);
+        return `${base}${path}`;
+      }
       const clean = configuredBase.trim().replace(/\/+$/, "");
       return `${clean}${path}`;
     }
-    const region = resolveBedrockMantleRegion(credentials?.providerSpecificData);
+    const region = resolveBedrockMantleRegion(credentials?.providerSpecificData, model);
     const base = buildBedrockMantleBaseUrl(region);
     return `${base}${path}`;
   }
@@ -72,6 +79,7 @@ export class BedrockMantleExecutor extends DefaultExecutor {
       body: serializedBody,
       providerSpecificData: credentials?.providerSpecificData,
       apiKey: credentials?.apiKey,
+      model,
     });
 
     const response = await fetch(url, {

@@ -27,6 +27,28 @@ test("Bedrock Mantle region and URL resolution", () => {
   );
   assert.equal(resolveBedrockMantleRegion({}), "us-east-1");
 
+  // Astra specifically routes to us-west-2
+  assert.equal(resolveBedrockMantleRegion({}, "openai.gpt-6-astra"), "us-west-2");
+  assert.equal(
+    resolveBedrockMantleRegion({ region: "us-east-1" }, "openai.gpt-6-astra"),
+    "us-west-2"
+  );
+  assert.equal(
+    resolveBedrockMantleRegion({ region: "us-east-1" }, "openai.gpt-5.6-sol"),
+    "us-east-1"
+  );
+  assert.equal(
+    resolveBedrockMantleRegion({ region: "us-east-1" }, "openai.gpt-5.6-luna"),
+    "us-east-1"
+  );
+  assert.equal(
+    resolveBedrockMantleRegion(
+      { region: "us-east-1", modelRegions: { "openai.gpt-6-astra": "eu-central-1" } },
+      "openai.gpt-6-astra"
+    ),
+    "eu-central-1"
+  );
+
   assert.equal(
     buildBedrockMantleBaseUrl("us-west-2"),
     "https://bedrock-mantle.us-west-2.api.aws/openai/v1"
@@ -124,6 +146,7 @@ test("BedrockMantleExecutor routes GPT-5.6 through Responses", () => {
   const executor = new BedrockMantleExecutor();
   assert.equal(executor.getProvider(), "bedrock-mantle");
   assert.equal(getModelTargetFormat("bedrock-mantle", "openai.gpt-5.6-sol"), "openai-responses");
+  assert.equal(getModelTargetFormat("bedrock-mantle", "openai.gpt-6-astra"), "openai-responses");
 
   const defaultUrl = executor.buildUrl("openai.gpt-5.6-sol", false, 0, null);
   assert.equal(defaultUrl, "https://bedrock-mantle.us-east-1.api.aws/openai/v1/responses");
@@ -132,6 +155,18 @@ test("BedrockMantleExecutor routes GPT-5.6 through Responses", () => {
     providerSpecificData: { region: "eu-west-1" },
   } as unknown as ProviderCredentials);
   assert.equal(customRegionUrl, "https://bedrock-mantle.eu-west-1.api.aws/openai/v1/responses");
+
+  // Astra specifically routes to us-west-2 even when connection region is us-east-1
+  const astraUrl = executor.buildUrl("openai.gpt-6-astra", false, 0, {
+    providerSpecificData: { region: "us-east-1" },
+  } as unknown as ProviderCredentials);
+  assert.equal(astraUrl, "https://bedrock-mantle.us-west-2.api.aws/openai/v1/responses");
+
+  // Luna stays in us-east-1
+  const lunaUrl = executor.buildUrl("openai.gpt-5.6-luna", false, 0, {
+    providerSpecificData: { region: "us-east-1" },
+  } as unknown as ProviderCredentials);
+  assert.equal(lunaUrl, "https://bedrock-mantle.us-east-1.api.aws/openai/v1/responses");
 
   const legacyUrl = executor.buildUrl("openai.gpt-5.5", false, 0, null);
   assert.equal(legacyUrl, "https://bedrock-mantle.us-east-1.api.aws/openai/v1/chat/completions");

@@ -10,11 +10,41 @@ function getTrimmedString(value: unknown): string | null {
   return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
 }
 
-export function resolveBedrockMantleRegion(providerSpecificData: unknown): string {
+export function isAstraModel(model?: string | null): boolean {
+  if (!model) return false;
+  const clean = model.toLowerCase();
+  return clean.includes("gpt-6-astra") || clean === "astra" || clean.endsWith(".gpt-6-astra");
+}
+
+export function resolveBedrockMantleRegion(
+  providerSpecificData: unknown,
+  model?: string | null
+): string {
   const data =
     providerSpecificData && typeof providerSpecificData === "object"
       ? (providerSpecificData as Record<string, unknown>)
       : {};
+
+  const modelRegions =
+    (data.modelRegions as Record<string, unknown> | undefined) ||
+    (data.model_regions as Record<string, unknown> | undefined);
+  if (model && modelRegions && typeof modelRegions === "object") {
+    const custom =
+      getTrimmedString(modelRegions[model]) ||
+      (isAstraModel(model) ? getTrimmedString(modelRegions["openai.gpt-6-astra"]) : null);
+    if (custom) return normalizeBedrockRegion(custom);
+  }
+
+  if (isAstraModel(model)) {
+    const astraExplicit =
+      getTrimmedString(data.astraRegion) ||
+      getTrimmedString(data.astra_region) ||
+      getTrimmedString(process.env.PI_BEDROCK_MANTLE_ASTRA_REGION) ||
+      getTrimmedString(process.env.BEDROCK_MANTLE_ASTRA_REGION);
+    if (astraExplicit) return normalizeBedrockRegion(astraExplicit);
+
+    return "us-west-2";
+  }
 
   const explicit =
     getTrimmedString(data.region) ||
@@ -96,8 +126,19 @@ export async function signBedrockMantleRequest(options: {
   providerSpecificData?: unknown;
   apiKey?: string | null;
   now?: Date;
+  model?: string | null;
 }): Promise<Record<string, string>> {
-  const region = resolveBedrockMantleRegion(options.providerSpecificData);
+  let region: string;
+  try {
+    const match = new URL(options.url).hostname.match(/^bedrock-mantle\.([a-z0-9-]+)\./i);
+    if (match?.[1]) {
+      region = normalizeBedrockRegion(match[1]);
+    } else {
+      region = resolveBedrockMantleRegion(options.providerSpecificData, options.model);
+    }
+  } catch {
+    region = resolveBedrockMantleRegion(options.providerSpecificData, options.model);
+  }
   const creds = await resolveAwsSigV4Credentials(options.providerSpecificData, options.apiKey);
 
   return signAwsRequest({
