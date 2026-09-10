@@ -223,13 +223,19 @@ async function evaluatePinnedResponse(args: {
   config: ComboSetupConfig;
   log: ComboLogger;
 }): Promise<Response | null> {
-  const { pinnedResult, pinnedModel, clientRequestedStream, config, log } = args;
+  let { pinnedResult } = args;
+  const { pinnedModel, clientRequestedStream, config, log } = args;
   if (pinnedResult.ok) {
+    const isStreaming = clientRequestedStream;
     let pinnedClone: Response;
-    try {
-      pinnedClone = pinnedResult.clone();
-    } catch {
+    if (isStreaming) {
       pinnedClone = pinnedResult;
+    } else {
+      try {
+        pinnedClone = pinnedResult.clone();
+      } catch {
+        pinnedClone = pinnedResult;
+      }
     }
     const pinnedQuality = await validateResponseQuality(
       pinnedClone,
@@ -237,7 +243,13 @@ async function evaluatePinnedResponse(args: {
       log,
       config.responseValidation
     );
-    releaseQualityClone(pinnedClone, pinnedResult, pinnedQuality);
+    if (isStreaming) {
+      if (pinnedQuality.valid && pinnedQuality.clonedResponse) {
+        pinnedResult = pinnedQuality.clonedResponse;
+      }
+    } else {
+      releaseQualityClone(pinnedClone, pinnedResult, pinnedQuality);
+    }
     if (pinnedQuality.valid) return pinnedResult;
     releaseRejectedQualityResponse(pinnedClone, pinnedResult);
     log.warn(

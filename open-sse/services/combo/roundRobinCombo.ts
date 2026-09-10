@@ -642,7 +642,7 @@ export async function handleRoundRobinCombo({
             fingerprint: resolveTargetFingerprint(target) ?? "",
           });
 
-          const result = await Promise.race([
+          let result = await Promise.race([
             handleSingleModel(attemptBody, modelStr, {
               ...targetForAttempt,
               effectiveComboStrategy: "round-robin",
@@ -673,11 +673,16 @@ export async function handleRoundRobinCombo({
 
           // Success — validate response quality before returning
           if (result.ok) {
+            const isStreaming = clientRequestedStream;
             let rrClone: Response;
-            try {
-              rrClone = result.clone();
-            } catch {
+            if (isStreaming) {
               rrClone = result;
+            } else {
+              try {
+                rrClone = result.clone();
+              } catch {
+                rrClone = result;
+              }
             }
             const quality = await validateResponseQuality(
               rrClone,
@@ -685,7 +690,13 @@ export async function handleRoundRobinCombo({
               log,
               config.responseValidation
             );
-            releaseQualityClone(rrClone, result, quality);
+            if (isStreaming) {
+              if (quality.valid && quality.clonedResponse) {
+                result = quality.clonedResponse;
+              }
+            } else {
+              releaseQualityClone(rrClone, result, quality);
+            }
             if (!quality.valid) {
               releaseRejectedQualityResponse(rrClone, result);
               log.warn(

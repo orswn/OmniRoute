@@ -178,6 +178,52 @@ test("releaseQualityClone does not throw when there is no clonedResponse", () =>
   assert.doesNotThrow(() => releaseQualityClone({} as Response, original, {}));
 });
 
+test("streaming quality validation adopts replay stream directly without clone", async () => {
+  let cloneCalled = false;
+  const chunk1 = new TextEncoder().encode('data: {"choices":[{"delta":{"content":"part1"}}]}\n\n');
+  const chunk2 = new TextEncoder().encode('data: {"choices":[{"delta":{"content":"part2"}}]}\n\n');
+  const chunk3 = new TextEncoder().encode("data: [DONE]\n\n");
+  const chunks = [chunk1, chunk2, chunk3];
+  let chunkIdx = 0;
+
+  const response = {
+    headers: new Headers({ "content-type": "text/event-stream" }),
+    status: 200,
+    statusText: "OK",
+    clone: () => {
+      cloneCalled = true;
+      throw new Error("clone should not be called on streaming response");
+    },
+    body: new ReadableStream({
+      pull(controller) {
+        if (chunkIdx < chunks.length) {
+          controller.enqueue(chunks[chunkIdx++]);
+        } else {
+          controller.close();
+        }
+      },
+    }),
+  } as unknown as Response;
+
+  const quality = await validateResponseQuality(response, true, {});
+  assert.strictEqual(quality.valid, true);
+  assert.strictEqual(cloneCalled, false);
+  assert.ok(quality.clonedResponse);
+
+  const reader = quality.clonedResponse.body!.getReader();
+  const collected: string[] = [];
+  const decoder = new TextDecoder();
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    collected.push(decoder.decode(value));
+  }
+  const fullText = collected.join("");
+  assert.ok(fullText.includes("part1"));
+  assert.ok(fullText.includes("part2"));
+  assert.ok(fullText.includes("[DONE]"));
+});
+
 // ── Combo fallback silent-stop regression (#3399/#3685 + user log 1784230812441) ──
 //
 // Bug: combo streamed an upstream SSE response that carried bytes but never sent

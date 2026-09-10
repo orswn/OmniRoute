@@ -353,7 +353,7 @@ export async function executeTargetAttempt(opts: {
         decision: "dispatched",
       });
     }
-    const result = await deps.handleSingleModelWithTimeout(attemptBody, modelStr, {
+    let result = await deps.handleSingleModelWithTimeout(attemptBody, modelStr, {
       ...targetForAttempt,
       effectiveComboStrategy: deps.strategy,
       failoverBeforeRetry: deps.config.failoverBeforeRetry,
@@ -367,14 +367,20 @@ export async function executeTargetAttempt(opts: {
         undefined;
       const effectiveConnectionId = selectedConnectionId || target.connectionId || "";
 
-      // Clone BEFORE quality check — validateResponseQuality reads the body
-      // via getReader() which locks the stream. The clone's body is consumed
-      // by the quality check; the original stays unlocked for piping.
+      // For streaming responses, pass result directly without calling result.clone():
+      // ReadableStream.tee() buffers chunks in V8 heap until both branches are read.
+      // validateResponseQuality returns quality.clonedResponse which replays the peeked
+      // prefix and forwards the rest of the stream without any tee buffer.
+      const isStreaming = deps.clientRequestedStream;
       let qualityClone: Response;
-      try {
-        qualityClone = result.clone();
-      } catch {
+      if (isStreaming) {
         qualityClone = result;
+      } else {
+        try {
+          qualityClone = result.clone();
+        } catch {
+          qualityClone = result;
+        }
       }
       const quality = await validateResponseQuality(
         qualityClone,
@@ -382,7 +388,13 @@ export async function executeTargetAttempt(opts: {
         deps.log,
         deps.config.responseValidation as ResponseValidationConfig | null | undefined
       );
-      releaseQualityClone(qualityClone, result, quality);
+      if (isStreaming) {
+        if (quality.valid && quality.clonedResponse) {
+          result = quality.clonedResponse;
+        }
+      } else {
+        releaseQualityClone(qualityClone, result, quality);
+      }
       if (!quality.valid) {
         releaseRejectedQualityResponse(qualityClone, result);
         deps.log.warn(

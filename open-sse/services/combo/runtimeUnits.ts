@@ -278,7 +278,7 @@ export async function executeRuntimeUnitCombo(args: {
         "COMBO",
         `Trying ${unit.kind} ${unitDisplayName(unit)}${retry > 0 ? ` (retry ${retry})` : ""}`
       );
-      const response = await executeRuntimeUnit({
+      let response = await executeRuntimeUnit({
         body: args.body,
         unit,
         allCombos: args.allCombos,
@@ -302,11 +302,16 @@ export async function executeRuntimeUnitCombo(args: {
           });
           return { response, unit };
         }
+        const isStreaming = clientRequestedStream;
         let unitClone: Response;
-        try {
-          unitClone = response.clone();
-        } catch {
+        if (isStreaming) {
           unitClone = response;
+        } else {
+          try {
+            unitClone = response.clone();
+          } catch {
+            unitClone = response;
+          }
         }
         const quality = await validateResponseQuality(
           unitClone,
@@ -314,7 +319,13 @@ export async function executeRuntimeUnitCombo(args: {
           args.log,
           args.config.responseValidation as ResponseValidationConfig | undefined
         );
-        releaseQualityClone(unitClone, response, quality);
+        if (isStreaming) {
+          if (quality.valid && quality.clonedResponse) {
+            response = quality.clonedResponse;
+          }
+        } else {
+          releaseQualityClone(unitClone, response, quality);
+        }
         if (quality.valid) {
           recordComboRequest(args.combo.name, unit.modelStr, {
             success: true,
