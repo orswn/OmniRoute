@@ -256,6 +256,9 @@ function isStreamingUpstreamError(parsed: unknown, eventType: string): boolean {
 
 type StreamingPeekOutcome = "content" | "error" | null;
 
+const MAX_STREAMING_QUALITY_PEEK_BYTES = 256 * 1024;
+const MAX_STREAMING_QUALITY_PEEK_CHUNKS = 1024;
+
 /**
  * Validate that a successful (HTTP 200) non-streaming response actually contains
  * meaningful content. Returns { valid: true } or { valid: false, reason }.
@@ -307,6 +310,7 @@ export async function validateResponseQuality(
     // Raw Uint8Array chunks accumulated so far — used to replay the prefix
     // in the returned clonedResponse.
     const bufferedChunks: Uint8Array[] = [];
+    let bufferedBytes = 0;
     // Decoded text accumulated across chunks for incremental SSE parsing.
     // Only the tail of the most-recently-processed line window remains here
     // between iterations (incomplete lines are deferred to the next chunk).
@@ -473,6 +477,9 @@ export async function validateResponseQuality(
             controller.close();
           }
         },
+        async cancel(reason) {
+          await readerToForward.cancel(reason);
+        },
       });
       return new Response(stream, {
         status: response.status,
@@ -582,6 +589,7 @@ export async function validateResponseQuality(
 
         // Accumulate raw bytes for potential replay.
         bufferedChunks.push(value);
+        bufferedBytes += value.byteLength;
 
         // Decode incrementally (stream:true keeps multi-byte char state).
         decodedSoFar += decoder.decode(value, { stream: true });
@@ -606,6 +614,18 @@ export async function validateResponseQuality(
           // the original reader unchanged.
           const clonedResponse = buildReplayResponse(reader);
           return { valid: true, clonedResponse };
+        }
+
+        if (
+          bufferedBytes >= MAX_STREAMING_QUALITY_PEEK_BYTES ||
+          bufferedChunks.length >= MAX_STREAMING_QUALITY_PEEK_CHUNKS
+        ) {
+          reader.cancel().catch(() => {});
+          log.warn?.(
+            "COMBO",
+            `Streaming response produced no content within ${bufferedBytes} quality-check bytes`
+          );
+          return { valid: false, reason: "streaming quality peek limit exceeded" };
         }
       }
     } catch (streamErr) {
@@ -854,6 +874,7 @@ export function releaseQualityClone(
 ): void {
   if (clone === original) return;
   void quality.clonedResponse?.body?.cancel().catch(() => {});
+  void clone.body?.cancel().catch(() => {});
 }
 
 /**

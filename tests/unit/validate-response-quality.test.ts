@@ -45,7 +45,10 @@ test("returns valid=false for non-JSON non-SSE text", async () => {
 
 test("returns valid=false for Responses API bodies with no output items", async () => {
   const res = await validateResponseQuality(
-    makeResponse(JSON.stringify({ object: "response", status: "completed", output: [] }), "application/json"),
+    makeResponse(
+      JSON.stringify({ object: "response", status: "completed", output: [] }),
+      "application/json"
+    ),
     false,
     {}
   );
@@ -91,6 +94,83 @@ test("releaseQualityClone cancels the discarded clonedResponse body", async () =
   assert.ok(clonedResponse.body?.locked || cloneBody.locked === false);
   // The original (client-facing) response is never disturbed.
   assert.strictEqual(original.bodyUsed, false);
+});
+
+test("releaseQualityClone cancels the reader behind a streaming replay response", async () => {
+  const encoder = new TextEncoder();
+  let cancelCalls = 0;
+  const reader = {
+    read: async () => ({
+      done: false,
+      value: encoder.encode(
+        'event: content_block_delta\ndata: {"type":"content_block_delta","delta":{"type":"text_delta","text":"hello"}}\n\n'
+      ),
+    }),
+    cancel: async () => {
+      cancelCalls += 1;
+    },
+  };
+  const qualityClone = {
+    body: { getReader: () => reader, cancel: async () => undefined },
+    headers: new Headers({ "content-type": "text/event-stream" }),
+    status: 200,
+    statusText: "OK",
+  } as unknown as Response;
+  const original = new Response("streamed to client");
+
+  const quality = await validateResponseQuality(qualityClone, true, {});
+  assert.strictEqual(quality.valid, true);
+  assert.ok(quality.clonedResponse);
+
+  releaseQualityClone(qualityClone, original, quality);
+  await Promise.resolve();
+
+  assert.strictEqual(cancelCalls, 1, "discarded replay must cancel its locked source reader");
+  assert.strictEqual(original.bodyUsed, false);
+});
+
+test("releaseQualityClone cancels the unread outer clone for non-streaming validation", async () => {
+  const qualityClone = new Response(
+    JSON.stringify({ choices: [{ message: { content: "hello" } }] }),
+    { headers: { "content-type": "application/json" } }
+  );
+  const original = new Response("returned to client");
+  const quality = await validateResponseQuality(qualityClone, false, {});
+
+  assert.strictEqual(quality.valid, true);
+  assert.strictEqual(qualityClone.bodyUsed, false);
+
+  releaseQualityClone(qualityClone, original, quality);
+  await Promise.resolve();
+
+  assert.strictEqual(qualityClone.bodyUsed, true, "unread outer clone must be cancelled");
+  assert.strictEqual(original.bodyUsed, false);
+});
+
+test("streaming quality validation stops peeking after a bounded byte budget", async () => {
+  const chunk = new TextEncoder().encode(`${" ".repeat(4094)}\n\n`);
+  let readCalls = 0;
+  const response = {
+    body: {
+      getReader: () => ({
+        read: async () => {
+          readCalls += 1;
+          if (readCalls > 100) throw new Error("unbounded quality peek");
+          return { done: false, value: chunk };
+        },
+        cancel: async () => undefined,
+      }),
+    },
+    headers: new Headers({ "content-type": "text/event-stream" }),
+    status: 200,
+    statusText: "OK",
+  } as unknown as Response;
+
+  const quality = await validateResponseQuality(response, true, {});
+
+  assert.strictEqual(quality.valid, false);
+  assert.strictEqual(quality.reason, "streaming quality peek limit exceeded");
+  assert.ok(readCalls <= 65, `quality peek read ${readCalls} chunks before stopping`);
 });
 
 test("releaseQualityClone does not throw when there is no clonedResponse", () => {
